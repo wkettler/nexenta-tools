@@ -12,16 +12,35 @@ William Kettler <william.kettler@nexenta.com>
 
 import re
 import subprocess
-import signal
+import getopt
+import sys
+
+def usage():
+    """
+    Print usage.
+
+    Inputs:
+        None
+    Outputs:
+        None
+    """
+    cmd = sys.argv[0]
+
+    print "%s -r [-h] [-o OPTION]" % cmd
+    print ""
+    print "Clear the ZFS label from every drive in the system that is not " \
+          "part of an active pool."
+    print ""
+    print "Arguments:"
+    print ""
+    print "    -h, --help           print usage"
+    print "    -f, --force          do not prompt user"
 
 class Execute(Exception):
     pass
 
 class Retcode(Exception):
     pass
-
-def alarm_handler(signum, frame):
-    raise Timeout
 
 def execute(cmd, timeout=None):
     """
@@ -179,7 +198,53 @@ def clear_labels(d):
     seek = sectors - 1024
     dd('/dev/zero', path, 512, count=1024, seek=seek)
 
+def prompt_yn(question):
+    """
+    Prompt the user with a yes or no question.
+
+    Input:
+        question (str): Question string
+    Output:
+        answer (bool): Answer True/False
+    """
+    while True:
+        choice = raw_input("%s [y|n] " % question)
+        if choice == "y":
+            answer = True
+            break
+        elif choice == "n":
+            answer = False
+            break
+        else:
+            print "Invalid input."
+
+    return answer
+
 def main():
+    # Parse command line arguments
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], ":hf", ["help", "force"])
+    except getopt.GetoptError as err:
+        print str(err)
+        usage()
+        sys.exit(2)
+
+    # Initialize required arguments
+    force = False
+
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-f", "--force"):
+            force = True
+
+    # Prompt user before continuing.
+    if not prompt_yn('Disk labels are about to be removed, continue?'):
+        sys.exit(1)
+    if not prompt_yn('Are you sure?'):
+        sys.exit(1)
+
     disks = get_disks()
     zpool_disks = get_zpool_disks()
 
