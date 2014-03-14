@@ -1,0 +1,196 @@
+#!/usr/bin/env python
+
+"""
+clearlabel.py
+
+Clear the ZFS label from every drive in the system that is not part of an
+imported pool.
+
+Copyright (C) 2014  Nexenta Systems
+William Kettler <william.kettler@nexenta.com>
+"""
+
+import re
+import subprocess
+import signal
+
+class Execute(Exception):
+    pass
+
+class Retcode(Exception):
+    pass
+
+def alarm_handler(signum, frame):
+    raise Timeout
+
+def execute(cmd, timeout=None):
+    """
+    Execute a command in the default shell. If a timeout is defined the command
+    will be killed when the timeout is exceeded.
+
+    Inputs:
+        cmd     (str): Command to execute
+        timeout (int): Command timeout in seconds
+    Outputs:
+        output (list): STDOUT, STDERR is piped to STDOUT
+    """
+    try:
+        # Execute the command and wait for the subprocess to terminate
+        phandle = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT)
+        # Wait for the command to return
+        phandle.poll()
+
+        # Read the stdout/sterr buffers and retcode
+        stdout, stderr = phandle.communicate()
+        retcode = phandle.returncode
+    except Exception as e:
+        raise Execute(e)
+
+    # Split lines into list
+    if stdout and stdout is not None:
+        output = stdout.strip().split('\n')
+    else:
+        output = None
+
+    return (retcode, output)
+
+def dd(ifile, ofile, bs, count=None, seek=None):
+    """
+    Wrapper for the GNU dd command.
+
+    Inputs:
+        ifile (str): Input file
+        ofile (str): Output file
+        bs    (str): Block size
+        count (int): Number of blocks to copy
+        seek  (int): Skip x blocks
+    Outputs:
+        None
+    """
+    # Execute dd command
+    cmd = "dd if=%s of=%s bs=%s" % (ifile, ofile, bs)
+    if count is not None:
+        cmd = " ".join([cmd, "count=%s" % count])
+    if seek is not None:
+        cmd = " ".join([cmd, "seek=%s" % seek])
+
+    try:
+        retcode, output = execute(cmd)
+    except:
+        raise
+    else:
+        if retcode:
+            raise Retcode("\n".join(output))
+
+def get_disks():
+    """
+    Return all device IDs.
+
+    Inputs:
+        None
+    Outputs:
+        disks (list): Disks
+    """
+    disks = []
+    cmd = "format </dev/null"
+
+    try:
+        retcode, output = execute(cmd)
+    except:
+        raise
+    else:
+        if retcode != 0 and retcode != 1:
+            raise Retcode("\n".join(output))
+
+    for line in output:
+        if re.search(r'c[0-9]*t[0-9]*d[0-9]*', line):
+            disks.append(line.split()[1])
+
+    return disks
+
+def get_sector_count(d):
+    """
+    Return the sector count of partition 0.
+
+    Inputs:
+        d (str): Device ID
+    Outputs:
+        part    (int): Partition number
+        sectors (int): Sector count
+    """
+    cmd = "prtvtoc -sh /dev/rdsk/%sp0" % d
+
+    try:
+        retcode, output = execute(cmd)
+    except:
+        raise
+    else:
+        if retcode:
+            raise Retcode("\n".join(output))
+
+    sectors = int(output[0].split()[4])
+
+    return sectors
+
+def get_zpool_disks():
+    """
+    Return all device IDs part of an active zpool.
+
+    Inputs:
+        None
+    Outputs:
+        disks (list): Disks
+    """
+    disks = []
+    cmd = "zpool status"
+
+    try:
+        retcode, output = execute(cmd)
+    except:
+        raise
+    else:
+        if retcode:
+            raise Retcode("\n".join(output))
+
+    for line in output:
+        if re.search(r'c[0-9]*t[0-9]*d[0-9]*', line):
+            disks.append(line.split()[0])
+
+    return disks
+
+def clear_labels(d):
+    """
+    Clear ZFS device labels written to the first and last 512KB of the disk.
+
+    Inputs:
+        d (str): Device ID
+    Outputs:
+        None
+    """
+    sectors = get_sector_count(d)
+    path = '/dev/dsk/%sp0' % d
+
+    # Write zeroes to the first 512KB of the drive
+    dd('/dev/zero', path, 512, count=1024, seek=None)
+
+    # Write zeroes to the last 512KB of the drive
+    # Each sector is 512B and we want to overwrite the last 512KB
+    seek = sectors - 1024
+    dd('/dev/zero', path, 512, count=1024, seek=seek)
+
+def main():
+    disks = get_disks()
+    zpool_disks = get_zpool_disks()
+
+    # Iterate over all disks
+    for d in disks:
+        # If the disk is part of a pool continue
+        if any(d in z for z in zpool_disks):
+            continue
+
+        print 'Clearing %s.' % d
+        clear_labels(d)
+
+if __name__ == "__main__":
+    main()
