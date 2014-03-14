@@ -123,7 +123,7 @@ def get_disks():
             raise Retcode("\n".join(output))
 
     for line in output:
-        if re.search(r'c[0-9]*t[0-9]*d[0-9]*', line):
+        if re.search(r'(c[0-9]t.*d[0-9])', line):
             disks.append(line.split()[1])
 
     return disks
@@ -173,7 +173,7 @@ def get_zpool_disks():
             raise Retcode("\n".join(output))
 
     for line in output:
-        if re.search(r'c[0-9]*t[0-9]*d[0-9]*', line):
+        if re.search(r'(c[0-9]t.*d[0-9])', line):
             disks.append(line.split()[0])
 
     return disks
