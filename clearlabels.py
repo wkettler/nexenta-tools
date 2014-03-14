@@ -240,10 +240,11 @@ def main():
             force = True
 
     # Prompt user before continuing.
-    if not prompt_yn('Disk labels are about to be removed, continue?'):
-        sys.exit(1)
-    if not prompt_yn('Are you sure?'):
-        sys.exit(1)
+    if not force:
+        if not prompt_yn('Disk labels are about to be removed, continue?'):
+            sys.exit(1)
+        if not prompt_yn('Are you sure?'):
+            sys.exit(1)
 
     disks = get_disks()
     zpool_disks = get_zpool_disks()
