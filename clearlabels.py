@@ -18,6 +18,7 @@ import subprocess
 import getopt
 import sys
 
+
 def usage():
     """
     Print usage.
@@ -39,13 +40,16 @@ def usage():
     print "    -h, --help           print usage"
     print "    -f, --force          do not prompt user"
 
+
 class Execute(Exception):
     pass
+
 
 class Retcode(Exception):
     pass
 
-def execute(cmd, timeout=None):
+
+def execute(cmd):
     """
     Execute a command in the default shell.
 
@@ -65,16 +69,17 @@ def execute(cmd, timeout=None):
         # Read the stdout/sterr buffers and retcode
         stdout, stderr = phandle.communicate()
         retcode = phandle.returncode
-    except Exception as e:
+    except Exception, e:
         raise Execute(e)
 
     # Split lines into list
     if stdout and stdout is not None:
-        output = stdout.strip().split('\n')
+        output = stdout.strip()
     else:
         output = None
 
-    return (retcode, output)
+    return retcode, output
+
 
 def dd(ifile, ofile, bs, count=None, seek=None):
     """
@@ -102,7 +107,8 @@ def dd(ifile, ofile, bs, count=None, seek=None):
         raise
     else:
         if retcode:
-            raise Retcode("\n".join(output))
+            raise Retcode(output)
+
 
 def get_disks():
     """
@@ -122,13 +128,14 @@ def get_disks():
         raise
     else:
         if retcode != 0 and retcode != 1:
-            raise Retcode("\n".join(output))
+            raise Retcode(output)
 
-    for line in output:
+    for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):
             disks.append(line.split()[1])
 
     return disks
+
 
 def get_sector_count(d):
     """
@@ -148,11 +155,12 @@ def get_sector_count(d):
         raise
     else:
         if retcode:
-            raise Retcode("\n".join(output))
+            raise Retcode(output)
 
-    sectors = int(output[0].split()[4])
+    sectors = int(output.splitlines()[0].split()[4])
 
     return sectors
+
 
 def get_zpool_disks():
     """
@@ -172,13 +180,14 @@ def get_zpool_disks():
         raise
     else:
         if retcode:
-            raise Retcode("\n".join(output))
+            raise Retcode(output)
 
-    for line in output:
+    for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):
             disks.append(line.split()[0])
 
     return disks
+
 
 def clear_labels(d):
     """
@@ -199,6 +208,7 @@ def clear_labels(d):
     # Each sector is 512B and we want to overwrite the last 512KB
     seek = sectors - 1024
     dd('/dev/zero', path, 512, count=1024, seek=seek)
+
 
 def prompt_yn(question):
     """
@@ -222,11 +232,12 @@ def prompt_yn(question):
 
     return answer
 
+
 def main():
     # Parse command line arguments
     try:
         opts, args = getopt.getopt(sys.argv[1:], ":hf", ["help", "force"])
-    except getopt.GetoptError as err:
+    except getopt.GetoptError, err:
         print str(err)
         usage()
         sys.exit(2)
@@ -260,8 +271,9 @@ def main():
         if any(d in z for z in zpool_disks):
             continue
 
-        print 'Clearing %s.' % d
+        print '* Clearing %s labels.' % d
         clear_labels(d)
+
 
 if __name__ == "__main__":
     main()
