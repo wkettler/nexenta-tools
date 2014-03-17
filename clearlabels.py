@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 """
-clearlabel.py
+clearlabels.py
+
+THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM.
 
 Clear the ZFS label from every drive in the system that is not part of an
-imported pool.
+imported pool. Drives that are part of an exported pool will be overwritten
+and data will be lost.
 
 Copyright (C) 2014  Nexenta Systems
 William Kettler <william.kettler@nexenta.com>
@@ -44,8 +47,7 @@ class Retcode(Exception):
 
 def execute(cmd, timeout=None):
     """
-    Execute a command in the default shell. If a timeout is defined the command
-    will be killed when the timeout is exceeded.
+    Execute a command in the default shell.
 
     Inputs:
         cmd     (str): Command to execute
@@ -229,7 +231,7 @@ def main():
         usage()
         sys.exit(2)
 
-    # Initialize required arguments
+    # Initialize arguments
     force = False
 
     for o, a in opts:
@@ -241,6 +243,9 @@ def main():
 
     # Prompt user before continuing.
     if not force:
+        print "THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM. " \
+              "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
+              "LOSS IS IMMINENT."
         if not prompt_yn('Disk labels are about to be removed, continue?'):
             sys.exit(1)
         if not prompt_yn('Are you sure?'):
