@@ -3,6 +3,9 @@
 """
 clearpgr3.py
 
+RUNNING THIS SCRIPT ON A PRODUCTION SYSTEM CAN BE DANGEROUS AND LEAD TO SERVICE
+OUTAGES OR DATA LOSS.
+
 Clear PGR3 reservations from every drive in the system that is not part of an
 active pool.
 
@@ -238,6 +241,8 @@ def main():
             force = True
 
     # Prompt user before continuing.
+    print "RUNNING THIS SCRIPT ON A PRODUCTION SYSTEM CAN BE DANGEROUS AND " \
+          " LEAD TO SERVICE OUTAGES OR DATA LOSS."
     if not force:
         if not prompt_yn('PGR3 reservations are about to be removed, '
                          'continue?'):

@@ -253,10 +253,10 @@ def main():
             force = True
 
     # Prompt user before continuing.
+    print "THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM. " \
+      "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
+      "LOSS IS IMMINENT."
     if not force:
-        print "THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM. " \
-              "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
-              "LOSS IS IMMINENT."
         if not prompt_yn('Disk labels are about to be removed, continue?'):
             sys.exit(1)
         if not prompt_yn('Are you sure?'):
