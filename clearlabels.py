@@ -107,7 +107,8 @@ def dd(ifile, ofile, bs, count=None, seek=None):
         raise
     else:
         if retcode:
-            raise Retcode(output)
+            sys.stderr.write(output)
+            sys.exit(1)
 
 
 def get_disks():
@@ -128,7 +129,8 @@ def get_disks():
         raise
     else:
         if retcode != 0 and retcode != 1:
-            raise Retcode(output)
+            sys.stderr.write(output)
+            sys.exit(1)
 
     for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):
@@ -155,9 +157,9 @@ def get_sector_count(d):
         raise
     else:
         if retcode:
-            raise Retcode("Please check /var/adm/messages for errors. "
-                          "There is likely a PGR3 reservation on the drive.\n"
-                          "%s" % output)
+            sys.stderr.write(output)
+            sys.stderr.write("Please check /var/adm/messages for errors.")
+            sys.exit(1)
 
     sectors = int(output.splitlines()[0].split()[4])
 
@@ -182,7 +184,8 @@ def get_zpool_disks():
         raise
     else:
         if retcode:
-            raise Retcode(output)
+            sys.stderr.write(output)
+            sys.exit(1)
 
     for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):

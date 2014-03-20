@@ -99,7 +99,8 @@ def get_disks():
         raise
     else:
         if retcode != 0 and retcode != 1:
-            raise Retcode("\n".join(output))
+            sys.stderr.write(output)
+            sys.exit(1)
 
     for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):
@@ -126,7 +127,8 @@ def get_zpool_disks():
         raise
     else:
         if retcode:
-            raise Retcode("\n".join(output))
+            sys.stderr.write(output)
+            sys.exit(1)
 
     for line in output.splitlines():
         if re.search(r'(c[0-9]t.*d[0-9])', line):
