@@ -6,8 +6,8 @@ clearlabels.py
 THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM.
 
 Clear the ZFS label from every drive in the system that is not part of an
-imported pool. Drives that are part of an exported pool will be overwritten
-and data will be lost.
+imported pool. Drives that are part of an exported pool will formatted and
+data will be lost.
 
 Copyright (C) 2014  Nexenta Systems
 William Kettler <william.kettler@nexenta.com>
@@ -80,34 +80,24 @@ def execute(cmd):
 
     return retcode, output
 
-
-def dd(ifile, ofile, bs, count=None, seek=None):
+def format_disk(d):
     """
-    Wrapper for the GNU dd command.
+    Format a drive with an EFI label.
 
     Inputs:
-        ifile (str): Input file
-        ofile (str): Output file
-        bs    (str): Block size
-        count (int): Number of blocks to copy
-        seek  (int): Skip x blocks
+        d (str): Device ID
     Outputs:
         None
     """
-    # Execute dd command
-    cmd = "dd if=%s of=%s bs=%s" % (ifile, ofile, bs)
-    if count is not None:
-        cmd = " ".join([cmd, "count=%s" % count])
-    if seek is not None:
-        cmd = " ".join([cmd, "seek=%s" % seek])
-
     try:
-        retcode, output = execute(cmd)
+        retcode, output = execute("fdisk -E /dev/rdsk/%s" % d)
     except:
         raise
     else:
         if retcode:
             sys.stderr.write(output)
+            sys.stderr.write("Please review /var/adm/messages for additional "
+                             "information.")
             sys.exit(1)
 
 
@@ -139,33 +129,6 @@ def get_disks():
     return disks
 
 
-def get_sector_count(d):
-    """
-    Return the sector count of partition 0.
-
-    Inputs:
-        d (str): Device ID
-    Outputs:
-        part    (int): Partition number
-        sectors (int): Sector count
-    """
-    cmd = "prtvtoc -sh /dev/rdsk/%sp0" % d
-
-    try:
-        retcode, output = execute(cmd)
-    except:
-        raise
-    else:
-        if retcode:
-            sys.stderr.write(output)
-            sys.stderr.write("Please check /var/adm/messages for errors.")
-            sys.exit(1)
-
-    sectors = int(output.splitlines()[0].split()[4])
-
-    return sectors
-
-
 def get_zpool_disks():
     """
     Return all device IDs part of an active zpool.
@@ -192,27 +155,6 @@ def get_zpool_disks():
             disks.append(line.split()[0])
 
     return disks
-
-
-def clear_labels(d):
-    """
-    Clear ZFS device labels written to the first and last 512KB of the disk.
-
-    Inputs:
-        d (str): Device ID
-    Outputs:
-        None
-    """
-    sectors = get_sector_count(d)
-    path = '/dev/dsk/%sp0' % d
-
-    # Write zeroes to the first 512KB of the drive
-    dd('/dev/zero', path, 512, count=1024, seek=None)
-
-    # Write zeroes to the last 512KB of the drive
-    # Each sector is 512B and we want to overwrite the last 512KB
-    seek = sectors - 1024
-    dd('/dev/zero', path, 512, count=1024, seek=seek)
 
 
 def prompt_yn(question):
@@ -243,7 +185,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], ":hf", ["help", "force"])
     except getopt.GetoptError, err:
-        print str(err)
+        sys.stderr.write(str(err))
         usage()
         sys.exit(2)
 
@@ -277,7 +219,7 @@ def main():
             continue
 
         print '* Clearing %s labels.' % d
-        clear_labels(d)
+        format_disk(d)
 
 
 if __name__ == "__main__":
