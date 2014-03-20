@@ -90,7 +90,7 @@ def format_disk(d):
         None
     """
     try:
-        retcode, output = execute("fdisk -E /dev/rdsk/%s" % d)
+        retcode, output = execute("fdisk -E /dev/rdsk/%sp0" % d)
     except:
         raise
     else:
