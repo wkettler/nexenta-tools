@@ -155,6 +155,7 @@ def get_sector_count(d):
         raise
     else:
         if retcode:
+            print 'Please check /var/adm/messages for errors.'
             raise Retcode(output)
 
     sectors = int(output.splitlines()[0].split()[4])
@@ -254,8 +255,8 @@ def main():
 
     # Prompt user before continuing.
     print "THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM. " \
-      "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
-      "LOSS IS IMMINENT."
+          "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
+          "LOSS IS IMMINENT."
     if not force:
         if not prompt_yn('Disk labels are about to be removed, continue?'):
             sys.exit(1)
