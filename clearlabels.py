@@ -155,8 +155,9 @@ def get_sector_count(d):
         raise
     else:
         if retcode:
-            print 'Please check /var/adm/messages for errors.'
-            raise Retcode(output)
+            raise Retcode("Please check /var/adm/messages for errors. "
+                          "There is likely a PGR3 reservation on the drive.\n"
+                          "%s" % output)
 
     sectors = int(output.splitlines()[0].split()[4])
 
