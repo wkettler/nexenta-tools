@@ -103,7 +103,7 @@ def get_disks():
             sys.exit(1)
 
     for line in output.splitlines():
-        if re.search(r'(c[0-9]t.*d[0-9])', line):
+        if re.search(r'(c[0-9]+t.*d[0-9]+)', line):
             disks.append(line.split()[1])
 
     return disks
