@@ -70,6 +70,14 @@ def execute(cmd, timeout=None):
 
 
 def get_zpool_list():
+    """
+    Return all zpools w/the exception of syspool.
+
+    Inputs:
+        None
+    Outputs:
+        zpool (list): zpools
+    """
     zpool = []
     cmd = "zpool list"
     retcode, output = execute(cmd)
@@ -78,6 +86,7 @@ def get_zpool_list():
         sys.exit(1)
 
     for line in output.splitlines():
+        # Ignore the header and syspool
         if line.startswith("NAME") or line.startswith("syspool"):
             continue
         zpool.append(line.split()[0].strip())
@@ -86,6 +95,15 @@ def get_zpool_list():
 
 
 def get_zpool_disks(zpool):
+    """
+    Return the device IDs for a give zpool. The list excludes any log, cache
+    or spare devices since they are not included in the capacity calculation.
+
+    Inputs:
+        zpool (str): zpool name
+    Outputs:
+        disks (list): All device IDs in the zpool
+    """
     disks = []
     cmd = "zpool status %s" % zpool
     retcode, output = execute(cmd)
@@ -94,7 +112,7 @@ def get_zpool_disks(zpool):
         sys.exit(1)
 
     for line in output.splitlines():
-        # Log and Cache devices aren't included in the calculation
+        # Log, cache and spares aren't included in the calculation
         if (line.strip().startswith("logs") or
             line.strip().startswith("cache") or
             line.strip().startswith("spares")):
@@ -106,6 +124,14 @@ def get_zpool_disks(zpool):
 
 
 def get_disk_sizes():
+    """
+    Return a dictionary of device IDs and their associated sizes in bytes.
+
+    Inputs:
+        None
+    Outputs:
+        sizes (dict): Device sizes
+    """
     sizes = {}
     cmd = "hddisco"
     retcode, output = execute(cmd)
@@ -136,12 +162,15 @@ def main():
         zpool_disks = get_zpool_disks(z)
         size = 0
 
+        # Sum the capacities of all the zpool disks
         for d in zpool_disks:
            size += disk_sizes[d]
         total += size
 
+        # Print the zpool total
         print "%20s %d" % (z, size / 1024**4)
 
+    # Print the overall total
     print "%20s %s" % (" ", "-" * 3)
     print "%20s %d" % ("TOTAL", total / 1024**4)
     print ""
