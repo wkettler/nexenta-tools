@@ -169,11 +169,11 @@ def main():
         total += size
 
         # Print the zpool total
-        print "%20s %5d TB" % (z, size / 1024**4)
+        print "%20s %5.1f TB" % (z, float(size) / 1024**4)
 
     # Print the overall total
     print "%20s %s" % (" ", "-" * 8)
-    print "%20s %5d TB" % ("TOTAL", total / 1024**4)
+    print "%20s %5.1f TB" % ("TOTAL", float(total) / 1024**4)
     print ""
 
 if __name__ == "__main__":
