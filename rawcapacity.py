@@ -114,8 +114,8 @@ def get_zpool_disks(zpool):
     for line in output.splitlines():
         # Log, cache and spares aren't included in the calculation
         if (line.strip().startswith("logs") or
-            line.strip().startswith("cache") or
-            line.strip().startswith("spares")):
+                line.strip().startswith("cache") or
+                line.strip().startswith("spares")):
             break
         elif re.search(r'(c[0-9]+t.*d[0-9]+\s)', line):
             disks.append(line.split()[0])
@@ -164,7 +164,7 @@ def main():
 
         # Sum the capacities of all the zpool disks
         for d in zpool_disks:
-           size += disk_sizes[d]
+            size += disk_sizes[d]
         total += size
 
         # Print the zpool total
