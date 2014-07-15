@@ -140,10 +140,10 @@ def main():
            size += disk_sizes[d]
         total += size
 
-        print "%s %d" % (z, size / 1024**4)
+        print "%20s %d" % (z, size / 1024**4)
 
-    print "-" * 10
-    print "Total %d" % (total / 1024**4)
+    print "%20s %s" % (" ", "-" * 3)
+    print "%20s %d" % ("TOTAL", total / 1024**4)
     print ""
 
 if __name__ == "__main__":
