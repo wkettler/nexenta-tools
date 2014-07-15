@@ -150,7 +150,8 @@ def get_disk_sizes():
 
 
 def main():
-    print "Calculating required license capacity."
+    print "Calculating raw pool capacity."
+    print "NOTE log, cache, and spares are not included in the calculation."
     print ""
 
     total = 0
@@ -168,11 +169,11 @@ def main():
         total += size
 
         # Print the zpool total
-        print "%20s %5d GB" % (z, size / 1024**4)
+        print "%20s %5d TB" % (z, size / 1024**4)
 
     # Print the overall total
     print "%20s %s" % (" ", "-" * 8)
-    print "%20s %5d GB" % ("TOTAL", total / 1024**4)
+    print "%20s %5d TB" % ("TOTAL", total / 1024**4)
     print ""
 
 if __name__ == "__main__":
