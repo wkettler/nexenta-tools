@@ -168,11 +168,11 @@ def main():
         total += size
 
         # Print the zpool total
-        print "%20s %d" % (z, size / 1024**4)
+        print "%20s %5d GB" % (z, size / 1024**4)
 
     # Print the overall total
-    print "%20s %s" % (" ", "-" * 3)
-    print "%20s %d" % ("TOTAL", total / 1024**4)
+    print "%20s %s" % (" ", "-" * 8)
+    print "%20s %5d GB" % ("TOTAL", total / 1024**4)
     print ""
 
 if __name__ == "__main__":
