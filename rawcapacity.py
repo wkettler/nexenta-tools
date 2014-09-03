@@ -3,8 +3,7 @@
 """
 rawcapacity.py
 
-Display the raw capacity of all imported pools. Useful when sizing a license
-capacity.
+Display the raw capacity of all imported pools. Useful when sizing a license.
 
 Copyright (c) 2014  Nexenta Systems
 William Kettler <william.kettler@nexenta.com>
