@@ -10,14 +10,16 @@
 # ftp://ftp.dell.com/Manuals/all-products/esuprt_electronics/esuprt_software/esuprt_remote_ent_sys_mgmt/integrated-dell-remote-access-cntrllr-7-v1.30.30_Reference%20Guide_en-us.pdf
 #
 
-HOST=$1
-PASS=$2
+host=$1
+pass=$2
+red='\e[0;31m'
+green='\e[0;32m'
+nc='\e[0m'
 
 prompt() {
     #
     # Prompt user with a yes or no question.
     #
-    
     read -p "$1 [y|n]: "
 
     # If yes return 0
@@ -37,9 +39,23 @@ racadm_set() {
     #
     # Set remote BIOS settings using ssh/racadm.
     #
+    out=$(sshpass -p $pass ssh -o StrictHostKeyChecking=no $host "racadm set $1 $2" 2>&1)
+    # If sshpass fails best to exit immediately to avoid a hung iDRAC
+    if [ $? -ne 0 ]; then
+        echo -e "[${red}FAILURE${nc}] sshpass"
+        echo $out
+        exit 1
+    fi
 
-    sshpass -p $PASS ssh -o StrictHostKeyChecking=no $HOST "racadm set $1 $2"
-    return $?
+    # We have no way of checking racadm return code so we must parse the output
+    # for an ERROR string
+    echo $out | grep -q ERROR
+    if [ $? -eq 0 ]; then
+        echo -e "[${red}FAILURE${nc}] $1 $2"
+        echo $out
+    else
+        echo -e "[${green}SUCCESS${nc}] $1 $2"
+    fi
 }
 
 # System profile
