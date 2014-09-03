@@ -1,11 +1,13 @@
 #!/bin/bash
 #
-# dell-bios.sh
+# dellbios.sh
 #
 # Configure Dell BIOS per best practices.
 #
 # Copyright (C) 2014  Nexenta Systems
 # William Kettler <william.kettler@nexenta.com>
+#
+# ftp://ftp.dell.com/Manuals/all-products/esuprt_electronics/esuprt_software/esuprt_remote_ent_sys_mgmt/integrated-dell-remote-access-cntrllr-7-v1.30.30_Reference%20Guide_en-us.pdf
 #
 
 HOST=$1
