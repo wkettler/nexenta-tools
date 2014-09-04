@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-rawcapacity.py
+raw-capacity.py
 
 Display the raw capacity of all imported pools. Useful when sizing a license.
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# dellbios.sh
+# dell-bios.sh
 #
 # Configure Dell BIOS per best practices.
 #

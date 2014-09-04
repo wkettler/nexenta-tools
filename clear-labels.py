@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 """
-clearpgr3.py
+clear-labels.py
 
-RUNNING THIS SCRIPT ON A PRODUCTION SYSTEM CAN BE DANGEROUS AND LEAD TO SERVICE
-OUTAGES OR DATA LOSS.
+THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM.
 
-Clear PGR3 reservations from every drive in the system that is not part of an
-active pool.
+Clear the ZFS label from every drive in the system that is not part of an
+imported pool. Drives that are part of an exported pool will formatted and
+data will be lost.
 
-Copyright (c) 2014  Nexenta Systems
+Copyright (C) 2014  Nexenta Systems
 William Kettler <william.kettler@nexenta.com>
 """
 
@@ -32,8 +32,8 @@ def usage():
 
     print "%s -r [-h] [-o OPTION]" % cmd
     print ""
-    print "Clear PGR3 reservations from every drive in the system that is " \
-          "not part of an active pool."
+    print "Clear the ZFS label from every drive in the system that is not " \
+          "part of an active pool."
     print ""
     print "Arguments:"
     print ""
@@ -79,6 +79,26 @@ def execute(cmd):
         output = None
 
     return retcode, output
+
+def format_disk(d):
+    """
+    Format a drive with an EFI label.
+
+    Inputs:
+        d (str): Device ID
+    Outputs:
+        None
+    """
+    try:
+        retcode, output = execute("fdisk -E /dev/rdsk/%sp0" % d)
+    except:
+        raise
+    else:
+        if retcode:
+            sys.stderr.write(output)
+            sys.stderr.write("Please review /var/adm/messages for additional "
+                             "information.")
+            sys.exit(1)
 
 
 def get_disks():
@@ -137,69 +157,6 @@ def get_zpool_disks():
     return disks
 
 
-def release_pgr3(d):
-    """
-    Release PGR3 reservation from drive.
-
-    Inputs:
-        d (str): Device ID
-    Outputs:
-        None
-    """
-    cmd = "/opt/HAC/RSF-1/bin/mhdc -v -d /dev/rdsk/%ss0 -c PGR3_RELEASE" % d
-
-    try:
-        retcode, output = execute(cmd)
-    except:
-        raise
-
-    # Print output
-    if output and output is not None:
-        print output
-
-
-def take_pgr3(d):
-    """
-    Take ownership of the PGR3 reservation.
-
-    Inputs:
-        d (str): Drive ID
-    Outputs:
-        None
-    """
-    cmd = "/opt/HAC/RSF-1/bin/mhdc -v -d /dev/rdsk/%ss0 -c PGR3_TAKE" % d
-
-    try:
-        retcode, output = execute(cmd)
-    except:
-        raise
-
-    # Print output
-    if output and output is not None:
-        print output
-
-
-def disable_failfast(d):
-    """
-    Disable RSF failfast.
-
-    Inputs:
-        d (str): Drive ID
-    Outputs:
-        None
-    """
-    cmd = "/opt/HAC/RSF-1/bin/mhdc -v -d /dev/rdsk/%ss0 -c ENFAILFAST 0" % d
-
-    try:
-        retcode, output = execute(cmd)
-    except:
-        raise
-
-    # Print output
-    if output and output is not None:
-        print output
-
-
 def prompt_yn(question):
     """
     Prompt the user with a yes or no question.
@@ -228,7 +185,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], ":hf", ["help", "force"])
     except getopt.GetoptError, err:
-        print str(err)
+        sys.stderr.write(str(err))
         usage()
         sys.exit(2)
 
@@ -243,11 +200,11 @@ def main():
             force = True
 
     # Prompt user before continuing.
-    print "RUNNING THIS SCRIPT ON A PRODUCTION SYSTEM CAN BE DANGEROUS AND " \
-          " LEAD TO SERVICE OUTAGES OR DATA LOSS."
+    print "THIS SCRIPT IS NOT INTENDED FOR USE ON A PRODUCTION SYSTEM. " \
+          "THIS SCRIPT IS INTENDED FOR TEST ENVIRONMENTS ONLY. DATA " \
+          "LOSS IS IMMINENT."
     if not force:
-        if not prompt_yn('PGR3 reservations are about to be removed, '
-                         'continue?'):
+        if not prompt_yn('Disk labels are about to be removed, continue?'):
             sys.exit(1)
         if not prompt_yn('Are you sure?'):
             sys.exit(1)
@@ -261,10 +218,8 @@ def main():
         if any(d in z for z in zpool_disks):
             continue
 
-        print '* Clearing %s PGR3 reservation.' % d
-        disable_failfast(d)
-        take_pgr3(d)
-        release_pgr3(d)
+        print '* Clearing %s labels.' % d
+        format_disk(d)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# smbdebug.sh
+# smb-debug.sh
 #
 # Collects logs useful when troubleshooting smb issues.
 #

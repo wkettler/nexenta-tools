@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 #
+# clear-iostat-sd.sh
+#
 # This script will clear sd_errstats of a disk. If the disk is called sd3, the argument will be 3
 #
 # John McLaughlin <john.mclaughlin@nexenta.com>
