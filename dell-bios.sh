@@ -43,20 +43,20 @@ racadm_set() {
     #
     # Set remote BIOS settings using ssh/racadm.
     #
-    out=$(sshpass -p $pass ssh -o StrictHostKeyChecking=no $host "racadm set $1 $2" 2>&1)
+    out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm set $1 $2" 2>&1)
     # If sshpass fails best to exit immediately to avoid a hung iDRAC
     if [ $? -ne 0 ]; then
         echo -e "[FAILURE] sshpass"
-        echo $out
+        echo "$out"
         exit 1
     fi
 
     # We have no way of checking racadm return code so we must parse the output
     # for an ERROR string
-    echo $out | grep -q ERROR
+    echo "$out" | grep -q ERROR
     if [ $? -eq 0 ]; then
         echo -e "[FAILURE] $1 $2"
-        echo $out
+        echo "$out"
     else
         echo -e "[SUCCESS] $1 $2"
     fi
