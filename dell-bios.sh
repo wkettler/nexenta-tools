@@ -46,7 +46,7 @@ racadm_set() {
     out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm set $1 $2" 2>&1)
     # If sshpass fails best to exit immediately to avoid a hung iDRAC
     if [ $? -ne 0 ]; then
-        echo -e "[FAILURE] sshpass"
+        echo "[FAILURE] sshpass"
         echo "$out"
         exit 1
     fi
@@ -55,10 +55,10 @@ racadm_set() {
     # for an ERROR string
     echo "$out" | grep -q ERROR
     if [ $? -eq 0 ]; then
-        echo -e "[FAILURE] $1 $2"
+        echo "[FAILURE] $1 $2"
         echo "$out"
     else
-        echo -e "[SUCCESS] $1 $2"
+        echo "[SUCCESS] $1 $2"
     fi
 }
 
