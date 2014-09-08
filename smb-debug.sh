@@ -25,7 +25,7 @@ cleanup() {
 
 # Verify all the binaries exist
 for i in ${SMBSRV} ${AUTHSVC} ${SNOOP} ${PGREP}; do
-	command -v $i &>/dev/null
+    command -v $i &>/dev/null
     if [ $? -ne 0 ]; then
         echo "[ERROR] ${i} not found"
         exit 1
