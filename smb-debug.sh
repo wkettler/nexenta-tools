@@ -7,8 +7,11 @@
 
 SMBSRV="/usr/lib/smbsrv/dtrace/smbsrv.d"
 AUTHSVC="/usr/lib/smbsrv/dtrace/smbd-authsvc.d"
+SMBSTAT="/usr/sbin/smbstat"
 SNOOP="/usr/sbin/snoop"
 PGREP="/usr/bin/pgrep"
+TAIL="/usr/bin/tail"
+LOG="/var/svc/log/network-smb-server\:default.log"
 DATE=`date +%s`
 IFACE=$1
 declare -a PIDS
@@ -41,6 +44,14 @@ echo ""
 
 # Capture network traffic on the client interface
 ${SNOOP} -q -d ${IFACE} -o ${DATE}_${IFACE}.snoop not port 22 &
+PIDS=("${PIDS[@]}" "$!")
+
+# Tail smb server logs
+${TAIL} -f ${LOG} > ${DATE}_network-smb-server.log &
+PIDS=("${PIDS[@]}" "$!")
+
+# Monitor smb statistics
+${SMBSTAT} -rz 1 > ${DATE}_smbstat-rz-1.out &
 PIDS=("${PIDS[@]}" "$!")
 
 # Monitor smbsrv internals
