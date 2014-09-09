@@ -11,7 +11,7 @@ SMBSTAT="/usr/sbin/smbstat"
 SNOOP="/usr/sbin/snoop"
 PGREP="/usr/bin/pgrep"
 TAIL="/usr/bin/tail"
-LOG="/var/svc/log/network-smb-server\:default.log"
+LOG="/var/svc/log/network-smb-server:default.log"
 DATE=`date +%s`
 IFACE=$1
 declare -a PIDS
