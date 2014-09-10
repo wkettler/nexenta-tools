@@ -11,7 +11,7 @@ IFACE=$1
 # Dtrace
 SMBSRV="/usr/lib/smbsrv/dtrace/smbsrv.d"
 AUTHSVC="/usr/lib/smbsrv/dtrace/smbd-authsvc.d"
-SMBKSTAT="dtrace/smb_kstat.d"
+KSTAT="dtrace/smb_kstat.d"
 TASKQ="dtrace/smb_taskq_wait.d"
 
 DATE=`date +%Y-%m-%d:%H:%M:%S`
@@ -38,7 +38,7 @@ background() {
 }
 
 # Verify all the binaries exist
-for i in ${SMBSRV} ${AUTHSVC} ${SMBSTAT} ${KSTAT}; do
+for i in ${SMBSRV} ${AUTHSVC} ${KSTAT} ${KSTAT}; do
     command -v $i &>/dev/null
     if [ $? -ne 0 ]; then
         echo "[ERROR] ${i} not found"
@@ -81,7 +81,7 @@ background "smbstat -rzu 1" "smbstat-rzu-1.out"
 background "${TASKQ}" "2smb-nt-create-andx.out"
 
 # Monitor SMB kstats
-background "${SMBKSTAT}" "smb-kstat.out"
+background "${KSTAT}" "smb-kstat.out"
 
 # Loop
 while true; do
