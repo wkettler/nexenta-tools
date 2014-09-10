@@ -1,4 +1,13 @@
-#!/usr/sbin/dtrace -qs 
+#!/usr/sbin/dtrace -qs
+
+/*
+ * smb_kstat.d
+ *
+ * This script prints SMB kstats.
+ *
+ * Tony Nguyen <tony.nguyen@nexenta.com>
+ *
+ */
 
 dtrace:::BEGIN
 {
