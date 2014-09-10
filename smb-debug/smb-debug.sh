@@ -38,7 +38,7 @@ background() {
 }
 
 # Verify all the binaries exist
-for i in ${SMBSRV} ${AUTHSVC} ${KSTAT} ${KSTAT}; do
+for i in ${SMBSRV} ${AUTHSVC} ${KSTAT} ${TASKQ}; do
     command -v $i &>/dev/null
     if [ $? -ne 0 ]; then
         echo "[ERROR] ${i} not found"
