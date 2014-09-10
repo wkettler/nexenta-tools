@@ -12,7 +12,7 @@ IFACE=$1
 SMBSRV="/usr/lib/smbsrv/dtrace/smbsrv.d"
 AUTHSVC="/usr/lib/smbsrv/dtrace/smbd-authsvc.d"
 SMBKSTAT="dtrace/smb_kstat.d"
-TASKQ="dtrace/2smb_nt_create_andx.d"
+TASKQ="dtrace/smb_taskq_wait.d"
 
 DATE=`date +%Y-%m-%d:%H:%M:%S`
 DIR="logs/${DATE}"
@@ -49,8 +49,11 @@ done
 # Make log directory
 mkdir -p ${DIR}
 
-# Verify command line params
-# Work in progress
+# Verify command interface exists
+dladm show-link | grep ${IFACE}
+if [ $? -ne 0 ]; then
+    echo "[ERROR] ${IFACE} does not exist"
+    exit 1
 
 echo ""
 echo "Ctrl-C to stop monitoring..."
