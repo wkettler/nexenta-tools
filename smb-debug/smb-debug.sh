@@ -78,7 +78,7 @@ background "tail -f /var/svc/log/network-smb-server:default.log" "network-smb-se
 background "smbstat -rzu 1" "smbstat-rzu-1.out"
 
 # Monitor taskq times
-background "${TASKQ}" "2smb-nt-create-andx.out"
+background "${TASKQ}" "smb-taskq-wait.out"
 
 # Monitor SMB kstats
 background "${KSTAT}" "smb-kstat.out"
