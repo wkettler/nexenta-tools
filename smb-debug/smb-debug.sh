@@ -8,13 +8,6 @@
 # Command line args
 IFACE=$1
 
-# Dtrace
-SMBSRV="/usr/lib/smbsrv/dtrace/smbsrv.d"
-AUTHSVC="/usr/lib/smbsrv/dtrace/smbd-authsvc.d"
-KSTAT="dtrace/smb_kstat.d"
-TASKQ="dtrace/smb_taskq_wait.d"
-SESSIONS="dtrace/smb_sessions.sh"
-
 DATE=$(date +%Y-%m-%d:%H:%M:%S)
 DIR="logs/${DATE}"
 IFACE=$1
@@ -31,21 +24,14 @@ cleanup() {
 }
 
 background() {
-    cmd=$1
-    log=$2
-
-    ${cmd} > "${DIR}/${log}" &
+    $1 &
     PIDS=("${PIDS[@]}" "$!")
 }
 
-# Verify all the binaries exist
-for i in ${SMBSRV} ${AUTHSVC} ${KSTAT} ${TASKQ} ${SESSIONS}; do
-    command -v $i &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo "[ERROR] ${i} not found"
-        exit 1
-    fi
-done
+background_log() {
+    $1 > "${DIR}/$2" &
+    PIDS=("${PIDS[@]}" "$!")
+}
 
 # Verify interface is defined
 if [ $# -ne 1 ]; then
@@ -68,32 +54,15 @@ echo ""
 echo "Ctrl-C to stop monitoring..."
 echo ""
 
-# Capture network traffic on the client interface
-snoop -q -d "${IFACE}" -o "${DIR}/${IFACE}.snoop" not port 22 &
-PIDS=("${PIDS[@]}" "$!")
-
-# Monitor smbsrv internals
-# ${SMBSRV} -o ${DIR}/smbsrv.out &
-# PIDS=("${PIDS[@]}" "$!")
-
-# Monitor authsvc internals
-# ${AUTHSVC} -p `pgrep smbd` -o ${DIR}/smbd-authsvc.out &
-# PIDS=("${PIDS[@]}" "$!")
-
-# Monitor active connections
-background "${SESSIONS}" "smb-sessions.out"
-
-# Tail smb server logs
-background "tail -f /var/svc/log/network-smb-server:default.log" "network-smb-server.out"
-
-# Monitor smb statistics using smbstat
-background "smbstat -rzu 1" "smbstat-rzu-1.out"
-
-# Monitor taskq times
-background "${TASKQ}" "smb-taskq-wait.out"
-
-# Monitor SMB kstats
-background "${KSTAT}" "smb-kstat.out"
+background "snoop -q -d ${IFACE} -o ${DIR}/${IFACE}.snoop not port 22"
+# background "/usr/lib/smbsrv/dtrace/smbsrv.d -o ${DIR}/smbsrv.out"
+# background "/usr/lib/smbsrv/dtrace/smbd-authsvc.d -p `pgrep smbd` -o ${DIR}/smbd-authsvc.out"
+background_log "dtrace/smb_sessions.sh" "smb-sessions.out"
+background_log "tail -f /var/svc/log/network-smb-server:default.log" "network-smb-server.out"
+background_log "smbstat -rzu 1" "smbstat-rzu-1.out"
+background_log "dtrace/smb_taskq_wait.d 1000" "smb-taskq-wait.out"
+background_log "dtrace/smb_kstat.d" "smb-kstat.out"
+background_log "dtrace/smb_req_time_th.d 1000" "smb-req-time-th.out"
 
 # Loop
 while true; do
