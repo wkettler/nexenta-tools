@@ -4,6 +4,9 @@
  * captures SMB requests took longer than specified time
  * user id: smb_request_t->uid_user->u_name
  * file: fid_ofile->f_node->vp->v_path
+ *
+ * Usage: ./smd_req_time_th.d 0   to use default 500 usecs threshold
+ *        ./smd_req_time_th.d 50   to use default 50 msecs (50000 usecs) threshold
  */
 
 BEGIN
@@ -22,9 +25,11 @@ fbt::smb_com_*:entry
 fbt::smb1sr_work:return
 /self->tr && (timestamp/1000 - self->start/1000) > delaytime/
 {
-        self->vp = self->sr->fid_ofile->f_node->vp;
-        self->vpath = stringof(self->vp->v_path);
-        self->uname = stringof(self->sr->uid_user->u_name);
+        self->vpath = self->sr->fid_ofile == NULL ? "dummy_file" :
+            stringof(self->sr->fid_ofile->f_node->vp->v_path);
+
+        self->uname = self->sr->uid_user->u_name == NULL ? "dummy_uid" :
+            stringof(self->sr->uid_user->u_name);
 
         printf("%Y: %-25s %s  %s  %10d\n", walltimestamp,
             self->func, self->uname, self->vpath, timestamp/1000 - self->start/1000);
