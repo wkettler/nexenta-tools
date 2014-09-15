@@ -10,16 +10,6 @@
 # ftp://ftp.dell.com/Manuals/all-products/esuprt_electronics/esuprt_software/esuprt_remote_ent_sys_mgmt/integrated-dell-remote-access-cntrllr-7-v1.30.30_Reference%20Guide_en-us.pdf
 #
 
-# Check command line parameters
-if [ $# -ne 2 ]; then
-    echo Usage
-    echo -e "\t$0 [user@]host password"
-    exit 1
-fi
-
-host=$1
-pass=$2
-
 prompt() {
     #
     # Prompt user with a yes or no question.
@@ -61,6 +51,18 @@ racadm_set() {
         echo "[SUCCESS] $1 $2"
     fi
 }
+
+# Check command line parameters
+if [ $# -ne 1 ]; then
+    echo Usage
+    echo -e "\t$0 [user@]host"
+    exit 1
+fi
+
+host=$1
+
+# Prompt for password
+read -s -p "Password :" pass
 
 # System profile
 racadm_set BIOS.SysProfileSettings.SysProfile PerfOptimized
