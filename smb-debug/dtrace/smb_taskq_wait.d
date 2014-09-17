@@ -152,4 +152,6 @@ fbt::smb2sr_work:return
     self->tr = 0;
     self->sr = 0;
     self->cmd_string = 0;
+    self->vpath = 0;
+    self->uname = 0;
 }
