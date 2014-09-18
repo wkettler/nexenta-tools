@@ -1,4 +1,5 @@
 #!/usr/sbin/dtrace -qs
+#pragma D option dynvarsize=8m
 
 /*
  * smb_req_time.d
@@ -133,6 +134,7 @@ fbt::smb1sr_work:return
         stringof(self->sr->uid_user->u_name);*/
 
     @smb1_rtime[self->cmd_string] = quantize(self->rtime);
+    @smb1_rtime_totals[self->cmd_string] = quantize(self->rtime);
 
     /*printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
         self->uname, self->vpath, self->rtime);*/
@@ -155,6 +157,7 @@ fbt::smb2sr_work:return
         stringof(self->sr->uid_user->u_name);*/
 
     @smb2_rtime[self->cmd_string] = quantize(self->rtime);
+    @smb2_rtime_totals[self->cmd_string] = quantize(self->rtime);
 
     /*printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
         self->uname, self->vpath, self->rtime);*/
@@ -179,4 +182,11 @@ profile:::tick-60sec
     clear(@smb1_rtime);
     printa(@smb2_rtime);
     clear(@smb2_rtime);
+}
+
+END
+{
+    printf("Totals\n");
+    printa(@smb1_rtime_totals);
+    printa(@smb2_rtime_totals);
 }
