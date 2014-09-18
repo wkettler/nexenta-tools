@@ -126,16 +126,16 @@ fbt::smb1sr_work:return
     self->cmd_string = smb1_cmd_code[self->sr->smb_com] != 0 ?
         smb1_cmd_code[self->sr->smb_com] : "Invalid";
 
-    self->vpath = self->sr->fid_ofile == NULL ? "Unknown" :
-        stringof(self->sr->fid_ofile->f_node->vp->v_path);
+    /*self->vpath = self->sr->fid_ofile == NULL ? "Unknown" :
+        stringof(self->sr->fid_ofile->f_node->vp->v_path);*/
 
-    self->uname = self->sr->uid_user->u_name == NULL ? "Unknown" :
-        stringof(self->sr->uid_user->u_name);
+    /*self->uname = self->sr->uid_user->u_name == NULL ? "Unknown" :
+        stringof(self->sr->uid_user->u_name);*/
 
     @smb1_rtime[self->cmd_string] = quantize(self->rtime);
 
-    printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
-        self->uname, self->vpath, self->rtime);
+    /*printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
+        self->uname, self->vpath, self->rtime);*/
 }
 
 /*
@@ -148,16 +148,16 @@ fbt::smb2sr_work:return
     self->cmd_string = smb2_cmd_code[self->sr->smb2_cmd_code] != 0 ?
         smb2_cmd_code[self->sr->smb2_cmd_code] : "Invalid";
 
-    self->vpath = self->sr->fid_ofile == NULL ? "Unknown" :
-        stringof(self->sr->fid_ofile->f_node->vp->v_path);
+    /*self->vpath = self->sr->fid_ofile == NULL ? "Unknown" :
+        stringof(self->sr->fid_ofile->f_node->vp->v_path);*/
 
-    self->uname = self->sr->uid_user->u_name == NULL ? "Unknown" :
-        stringof(self->sr->uid_user->u_name);
+    /*self->uname = self->sr->uid_user->u_name == NULL ? "Unknown" :
+        stringof(self->sr->uid_user->u_name);*/
 
     @smb2_rtime[self->cmd_string] = quantize(self->rtime);
 
-    printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
-        self->uname, self->vpath, self->rtime);
+    /*printf("%Y: %s %s %s %-10d\n", walltimestamp, self->cmd_string,
+        self->uname, self->vpath, self->rtime);*/
 }
 
 fbt::smb1sr_work:return,
@@ -174,6 +174,7 @@ fbt::smb2sr_work:return
 
 profile:::tick-60sec
 {
+    printf("%Y\n", walltimestamp);
     printa(@smb1_rtime);
     clear(@smb1_rtime);
     printa(@smb2_rtime);
