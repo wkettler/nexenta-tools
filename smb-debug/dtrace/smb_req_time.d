@@ -4,6 +4,8 @@
  * smb_req_time.d
  *
  * Returns the SMB requests that take longer than a specified time to complete.
+ * The response time is indicative of the latency a user would experience
+ * assuming no network latency.
  *
  * Usage: ./smd_req_time_th.d <threshold in ms>
  *
