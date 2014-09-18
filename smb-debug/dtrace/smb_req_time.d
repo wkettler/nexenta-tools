@@ -121,7 +121,7 @@ fbt::smb2sr_work:return
  */
 
 fbt::smb1sr_work:return
-/self->tr && self->rtime > delaytime/
+/self->tr && self->rtime > delaytime && self->sr->smb_com != 0xA0/
 {
     self->cmd_string = smb1_cmd_code[self->sr->smb_com] != 0 ?
         smb1_cmd_code[self->sr->smb_com] : "Invalid";
@@ -143,7 +143,7 @@ fbt::smb1sr_work:return
  */
 
 fbt::smb2sr_work:return
-/self->tr && self->rtime > delaytime/
+/self->tr && self->rtime > delaytime && self->sr->smb2_cmd_code != 0x0F/
 {
     self->cmd_string = smb2_cmd_code[self->sr->smb2_cmd_code] != 0 ?
         smb2_cmd_code[self->sr->smb2_cmd_code] : "Invalid";
