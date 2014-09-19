@@ -54,16 +54,16 @@ echo ""
 echo "Ctrl-C to stop monitoring..."
 echo ""
 
-background "snoop -q -d ${IFACE} -o ${DIR}/${IFACE}.snoop not port 22"
+background "snoop -q -d ${IFACE} -o ${DIR}/${IFACE}.snoop port 445"
 # background "/usr/lib/smbsrv/dtrace/smbsrv.d -o ${DIR}/smbsrv.out"
 # background "/usr/lib/smbsrv/dtrace/smbd-authsvc.d -p `pgrep smbd` -o ${DIR}/smbd-authsvc.out"
 background_log "dtrace/smb_sessions.sh" "smb-sessions.out"
 background_log "tail -f /var/svc/log/network-smb-server:default.log" "network-smb-server.log"
 background_log "tail -f /var/svc/log/system-idmap:default.log" "system-idmap.log"
-background_log "smbstat -rzu 1" "smbstat-rzu-1.out"
+background_log "smbstat -rzu 5" "smbstat-rzu-5.out"
 background_log "dtrace/smb_taskq_wait.d 1000" "smb-taskq-wait.out"
 background_log "dtrace/smb_kstat.d" "smb-kstat.out"
-background_log "dtrace/smb_req_time_th.d 1000" "smb-req-time-th.out"
+background_log "dtrace/smb_req_time.d 1000" "smb-req-time-th.out"
 
 # Loop
 while true; do
