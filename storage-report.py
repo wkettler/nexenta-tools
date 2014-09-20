@@ -76,6 +76,23 @@ def pprint_table(table):
     for i in range(len(table[0])):
         padding.append(max([len(row[i]) for row in table]))
 
+    # Print header
+    header = table.pop(0)
+    width = []
+    for i in range(len(header)):
+        width.append(len(header[i]))
+        col = header[i].rjust(padding[i] + 2)
+        print col,
+    print ""
+
+    # Print header delimiter
+    for i in range(len(width)):
+        under = "-" * width[i]
+        col = under.rjust(padding[i] + 2)
+        print col,
+    print ""
+
+    # Print table contents
     for row in table:
         for i in range(len(row)):
             col = row[i].rjust(padding[i] + 2)
