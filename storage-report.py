@@ -21,10 +21,6 @@ class Execute(Exception):
     pass
 
 
-class Retcode(Exception):
-    pass
-
-
 def execute(cmd):
     """
     Execute a command in the default shell.
@@ -46,7 +42,9 @@ def execute(cmd):
         stdout, stderr = phandle.communicate()
         retcode = phandle.returncode
     except Exception, e:
-        raise Execute(e)
+        sys.stderr.write("[ERROR] unable to execute \"%s\"" % cmd)
+        sys.stderr.write(output)
+        sys.exit(1)
 
     # Split lines into list
     if stdout and stdout is not None:
@@ -56,7 +54,7 @@ def execute(cmd):
 
     # Exit if command fails
     if retcode:
-        sys.stderr.write("[ERROR] unable to execute \"%s\"" % cmd)
+        sys.stderr.write("[ERROR] non-zero return code \"%s\"" % cmd)
         sys.stderr.write(output)
         sys.exit(1)
 
