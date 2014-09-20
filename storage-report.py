@@ -15,10 +15,7 @@ import re
 import time
 
 unit = 1024 ** 3
-
-
-class Execute(Exception):
-    pass
+unit_str = "G"
 
 
 def execute(cmd):
@@ -138,7 +135,8 @@ def get_usedsnap(zpool):
     output = execute(cmd)
 
     # Sum each line
-    usedsnap = "%.2f" % (sum([float(l) for l in output.splitlines()]) / unit)
+    usedsnap = "%.2f%s" % ((sum([float(l) for l in output.splitlines()]) /
+                            unit), unit_str)
 
     return usedsnap
 
@@ -157,7 +155,8 @@ def get_usedds(zpool):
     output = execute(cmd)
 
     # Sum each line
-    usedds = "%.2f" % (sum([float(l) for l in output.splitlines()]) / unit)
+    usedds = "%.2f%s" % ((sum([float(l) for l in output.splitlines()]) / unit),
+                         unit_str)
 
     return usedds
 
@@ -176,8 +175,8 @@ def get_usedrefreserv(zpool):
     output = execute(cmd)
 
     # Sum each line
-    usedrefreserv = "%.2f" % (sum([float(l) for l in output.splitlines()]) /
-                              unit)
+    usedrefreserv = "%.2f%s" % ((sum([float(l) for l in output.splitlines()]) /
+                                 unit), unit_str)
 
     return usedrefreserv
 
@@ -195,7 +194,7 @@ def get_used(zpool):
     cmd = "zfs list -Hp -o used %s" % zpool
     output = execute(cmd)
 
-    used = "%.2f" % (float(output.strip()) / unit)
+    used = "%.2f%s" % ((float(output.strip()) / unit), unit_str)
 
     return used
 
@@ -212,7 +211,7 @@ def get_allocated(zpool):
     cmd = "zpool list -Hp -o allocated %s" % zpool
     output = execute(cmd)
 
-    allocated = "%.2f" % (float(output.strip()) / unit)
+    allocated = "%.2f%s" % ((float(output.strip()) / unit), unit_str)
 
     return allocated
 
@@ -229,7 +228,7 @@ def get_size(zpool):
     cmd = "zpool list -Hp -o size %s" % zpool
     output = execute(cmd)
 
-    size = "%.2f" % (float(output.strip()) / unit)
+    size = "%.2f%s" % ((float(output.strip()) / unit), unit_str)
 
     return size
 
