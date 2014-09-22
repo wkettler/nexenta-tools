@@ -5,6 +5,8 @@ storage-report.py
 
 Report storage utilization.
 
+Supported on NexentaStor 4.0.3 or greater.
+
 Copyright (c) 2014  Nexenta Systems
 William Kettler <william.kettler@nexenta.com>
 """
