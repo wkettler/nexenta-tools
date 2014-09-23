@@ -42,7 +42,7 @@ def execute(cmd):
         retcode = phandle.returncode
     except Exception, e:
         sys.stderr.write("[ERROR] unable to execute \"%s\"" % cmd)
-        sys.stderr.write(output)
+        sys.stderr.write(e)
         sys.exit(1)
 
     # Split lines into list
