@@ -33,3 +33,8 @@ echo Resetting Tran Error
 ha=`echo "$ks::print -a struct sd_errstats sd_transerrs.value.ui32" | mdb -k | cut -d" " -f1`
 
 echo $ha/W 0 | mdb -kw
+
+echo Resetting No Device Error
+ha=`echo "$ks::print -a struct sd_errstats sd_rq_nodev_err.value.ui32" | mdb -k | cut -d" " -f1`
+
+echo $ha/W 0 | mdb -kw
