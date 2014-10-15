@@ -11,7 +11,7 @@
  * task (us)       - time total
  *
  * Tony Nguyen <tony.nguyen@nexenta.com>
- *
+ * Copyright 2014, Nexenta Systems, Inc.
  */
 
 BEGIN
