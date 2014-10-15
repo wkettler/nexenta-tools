@@ -4,6 +4,9 @@
 #
 # Collects logs useful when troubleshooting smb issues.
 #
+# William Kettler <william.kettler@nexenta.com>
+# Copyright 2014, Nexenta Systems, Inc.
+#
 
 # Command line args
 IFACE=$1

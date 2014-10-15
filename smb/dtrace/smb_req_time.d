@@ -12,6 +12,7 @@
  *
  * Tony Nguyen <tony.nguyen@nexenta.com>
  * William Kettler <william.kettler@nexenta.com>
+ * Copyright 2014, Nexenta Systems, Inc.
  */
 
 BEGIN

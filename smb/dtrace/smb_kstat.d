@@ -6,7 +6,7 @@
  * This script prints SMB kstats.
  *
  * Tony Nguyen <tony.nguyen@nexenta.com>
- *
+ * Copyright 2014, Nexenta Systems, Inc.
  */
 
 dtrace:::BEGIN
