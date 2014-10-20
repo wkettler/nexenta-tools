@@ -41,6 +41,7 @@ echo ""
 
 background_log "dtrace/stmf_task_time_th.d 1000" "stmf_task_time_th.out"
 background_log "dtrace/stmf_worker_queue.sh 5" "stmf_worker_queue.out"
+background_log "dtrace/iscsit_sessions.d" "iscsit_session.out"
 
 # Loop
 while true; do
