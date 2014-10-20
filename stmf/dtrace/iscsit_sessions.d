@@ -11,6 +11,7 @@
 
 BEGIN
 {
+    /* Session States */
     state[0] = "SS_UNDEFINED";
     state[1] = "SS_Q1_FREE";
     state[2] = "SS_Q2_ACTIVE";
@@ -21,6 +22,7 @@ BEGIN
     state[7] = "SS_Q7_ERROR";
     state[8] = "SS_MAX_STATE";
 
+    /* Session Events */
     event[0] = "SE_UNDEFINED";
     event[1] = "SE_CONN_IN_LOGIN";          /* From login state machine */
     event[2] = "SE_CONN_LOGGED_IN";         /* FFP enabled client notification */
