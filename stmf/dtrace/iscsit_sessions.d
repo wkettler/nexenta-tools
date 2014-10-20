@@ -1,9 +1,9 @@
 #!/usr/sbin/dtrace -qs
 
 /*
- * iscsi_sessions.d
+ * iscsit_sessions.d
  *
- * Logs iSCSI session state changes.
+ * Logs iSCSI target session state changes.
  *
  * William Kettler <william.kettler@nexenta.com>
  * Copyright 2014, Nexenta Systems, Inc.
