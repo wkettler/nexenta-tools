@@ -9,7 +9,9 @@
 #
 
 # Disover disks
-disks=$(nmc -c 'show lun disk' | cut -d" " -f1 | grep -v LUN)
+disks=$(nmc -c 'show lun slotmap' | grep c*t*d0 | cut -d" " -f1)
+
+echo "Disabling SMART."
 
 # Disable SMART on each disk
 (
