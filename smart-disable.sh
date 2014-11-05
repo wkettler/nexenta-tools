@@ -23,4 +23,4 @@ done
 ) | nmc
 
 # This should return if above succeeded o/w we must disable manually
-nmc -c 'setup lun smart disable'
+nmc -c 'show lun smartstat' | less
