@@ -25,8 +25,8 @@ usage() {
     ${ECHO} "\n"
     ${ECHO} "USAGE\n"
     ${ECHO} "    $0 <command>\n"
-    ${ECHO} "COMMAND\n"
     ${ECHO} "\n"
+    ${ECHO} "COMMAND\n"
     ${ECHO} "    start  : start collecting performance data.\n"
     ${ECHO} "    status : displays any running dtrace scripts it has invoked.\n"
     ${ECHO} "    stop   : attempt to stop the dtrace scripts it started.\n"
@@ -82,7 +82,7 @@ start() {
     background_log "dtrace/stmf_task_time_th.d 1000" "stmf_task_time_th.out"
     background_log "dtrace/stmf_worker_queue.sh 5" "stmf_worker_queue.out"
     background_log "dtrace/iscsit_sessions.d" "iscsit_sessions.out"
-    
+
     write_log "INFO" "Monitoring scripts started"
 }
 
