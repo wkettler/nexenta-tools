@@ -4,6 +4,7 @@
 #
 # Used to compare cluster node configs after installation.
 #
+# Copyright (c) 2014  Nexenta Systems
 # John McLaughlin <john.mclaughlin@nexenta.com>
 #
 
