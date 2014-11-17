@@ -8,10 +8,12 @@
 # William Kettler <william.kettler@nexenta.com>
 #
 
+echo "Discovering devices..."
+
 # Disover disks
 disks=$(nmc -c 'show lun slotmap' | grep c*t*d0 | cut -d" " -f1)
 
-echo "Disabling SMART."
+echo "Disabling SMART..."
 
 # Disable SMART on each disk
 (
