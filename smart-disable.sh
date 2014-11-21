@@ -8,14 +8,15 @@
 # William Kettler <william.kettler@nexenta.com>
 #
 
+echo "Disabling SMART collector..."
+nmc -c 'setup collector smart-collector disable'
+
 echo "Discovering devices..."
 
 # Disover disks
 disks=$(nmc -c 'show lun slotmap' | grep c*t*d0 | cut -d" " -f1)
 
 echo "Disabling SMART..."
-
-# Disable SMART on each disk
 (
 for d in $disks; do
     echo ""
