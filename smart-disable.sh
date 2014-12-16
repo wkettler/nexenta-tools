@@ -12,8 +12,6 @@ echo "Disabling SMART collector..."
 nmc -c 'setup collector smart-collector disable'
 
 echo "Discovering devices..."
-
-# Disover disks
 disks=$(nmc -c 'show lun slotmap' | grep c*t*d0 | cut -d" " -f1)
 
 echo "Disabling SMART..."
@@ -25,5 +23,5 @@ for d in $disks; do
 done
 ) | nmc
 
-# This should return if above succeeded o/w we must disable manually
+# Review SMART status on each drive
 nmc -c 'show lun smartstat' | less
