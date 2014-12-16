@@ -7,7 +7,7 @@
 # Copyright (C) 2014  Nexenta Systems
 # William Kettler <william.kettler@nexenta.com>
 #
-# ftp://ftp.dell.com/Manuals/all-products/esuprt_electronics/esuprt_software/esuprt_remote_ent_sys_mgmt/integrated-dell-remote-access-cntrllr-7-v1.30.30_Reference%20Guide_en-us.pdf
+# See ftp://ftp.dell.com/Manuals/all-products/esuprt_electronics/esuprt_software/esuprt_remote_ent_sys_mgmt/integrated-dell-remote-access-cntrllr-7-v1.30.30_Reference%20Guide_en-us.pdf
 #
 
 prompt() {
@@ -24,16 +24,16 @@ prompt() {
         return 1
     # If 'y' or 'n' was not entered re-prompt
     else
-        $ECHO "Invalid input."
+        echo "Invalid input."
         prompt "$1"
     fi
 }
 
-racadm_set() {
+ssh_racadm() {
     #
-    # Set remote BIOS settings using ssh/racadm.
+    # Remotely call racadm using ssh.
     #
-    out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm set $1 $2" 2>&1)
+    out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm $@" 2>&1)
     # If sshpass fails best to exit immediately to avoid a hung iDRAC
     if [ $? -ne 0 ]; then
         echo "[FAILURE] sshpass"
@@ -45,59 +45,10 @@ racadm_set() {
     # for an ERROR string
     echo "$out" | grep -q ERROR
     if [ $? -eq 0 ]; then
-        echo "[FAILURE] $1 $2"
+        echo "[FAILURE] $@"
         echo "$out"
     else
-        echo "[SUCCESS] $1 $2"
-    fi
-}
-
-racadm_commit() {
-    #
-    # commit changes 
-    # see http://jonamiki.com/2014/10/18/racadm-change-bios-settings-create-commit-job-reboot-and-apply/
-    #
-    out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm jobqueue create BIOS.Setup.1-1" 2>&1)
-    # If sshpass fails best to exit immediately to avoid a hung iDRAC
-    if [ $? -ne 0 ]; then
-        echo "[FAILURE] sshpass"
-        echo "$out"
-        exit 1
-    fi
-
-    # We have no way of checking racadm return code so we must parse the output
-    # for an ERROR string
-    echo "$out" | grep -q ERROR
-    if [ $? -eq 0 ]; then
-        echo "[FAILURE] jobqueue create BIOS.Setup.1-1"
-        echo "$out"
-    else
-        echo "[SUCCESS] jobqueue create BIOS.Setup.1-1"
-    fi
-}
-
-racadm_reboot() {
-    #
-    # Issues a power-cycle operation on the managed server. This action is
-    # similar to pressing the power button on the system's front panel to power
-    # down and then power up the system.
-    #
-    out=$(sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$host" "racadm serveraction powercycle" 2>&1)
-    # If sshpass fails best to exit immediately to avoid a hung iDRAC
-    if [ $? -ne 0 ]; then
-        echo "[FAILURE] sshpass"
-        echo "$out"
-        exit 1
-    fi
-
-    # We have no way of checking racadm return code so we must parse the output
-    # for an ERROR string
-    echo "$out" | grep -q ERROR
-    if [ $? -eq 0 ]; then
-        echo "[FAILURE] serveraction powercycle"
-        echo "$out"
-    else
-        echo "[SUCCESS] serveraction powercycle"
+        echo "[SUCCESS] $@"
     fi
 }
 
@@ -112,43 +63,45 @@ host=$1
 
 # Prompt for password
 read -s -p "Password :" pass
+echo ""
 
 # System profile
-racadm_set BIOS.SysProfileSettings.SysProfile PerfOptimized
+ssh_racadm set BIOS.SysProfileSettings.SysProfile PerfOptimized
 
 # Disable virtualization
-racadm_set BIOS.ProcSettings.ProcVirtualization Disabled
+ssh_racadm set BIOS.ProcSettings.ProcVirtualization Disabled
 
 # Disable embedded SATA
-racadm_set BIOS.SataSettings.EmbSata Off
+ssh_racadm set BIOS.SataSettings.EmbSata Off
 
 # Disable I/OAT DMA engine
-racadm_set BIOS.IntegratedDevices.IoatEngine Disabled
+ssh_racadm set BIOS.IntegratedDevices.IoatEngine Disabled
 
 # Disable SR-IOV
-racadm_set BIOS.IntegratedDevices.SriovGlobalEnable Disabled
+ssh_racadm set BIOS.IntegratedDevices.SriovGlobalEnable Disabled
 
 # Clean recovery from power failure
-racadm_set BIOS.SysSecurity.AcPwrRcvry Last
-racadm_set BIOS.SysSecurity.AcPwrRcvryDelay Immediate
+ssh_racadm set BIOS.SysSecurity.AcPwrRcvry Last
+ssh_racadm set BIOS.SysSecurity.AcPwrRcvryDelay Immediate
 
 # Boot mode
-racadm_set BIOS.BiosBootSettings.BootMode Bios
+ssh_racadm set BIOS.BiosBootSettings.BootMode Bios
 
 # PCI slot disablement
-racadm_set BIOS.SlotDisablement.Slot1 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot2 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot3 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot4 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot5 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot6 BootDriverDisabled
-racadm_set BIOS.SlotDisablement.Slot7 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot1 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot2 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot3 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot4 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot5 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot6 BootDriverDisabled
+ssh_racadm set BIOS.SlotDisablement.Slot7 BootDriverDisabled
 
-# commit the change
-racadm_commit
+# Commit the changes on next reboot
+# See http://jonamiki.com/2014/10/18/racadm-change-bios-settings-create-commit-job-reboot-and-apply/
+ssh_racadm jobqueue create BIOS.Setup.1-1
 
 # Reboot
 echo "A reboot is required for the new settings to take effect."
 if prompt "Reboot now?"; then
-    racadm_reboot
+    ssh_racadm serveraction powercycle
 fi
