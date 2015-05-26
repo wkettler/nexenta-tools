@@ -244,7 +244,7 @@ def main():
     search = None
     force = False
     yes = False
-    test = True
+    test = False
     pause = 0
 
     # Parse command line arguments
