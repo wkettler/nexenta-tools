@@ -9,6 +9,7 @@
 #
 
 echo "Disabling SMART collector..."
+nmc -c 'setup trigger nms-autosmartcheck disable'
 nmc -c 'setup collector smart-collector disable'
 
 echo "Discovering devices..."
