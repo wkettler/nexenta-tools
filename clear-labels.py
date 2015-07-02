@@ -207,7 +207,6 @@ def get_zpool_disks():
         sys.exit(1)
 
     for line in output.splitlines():
-        print line
         if re.search(r'(c[0-9]+t.*d[0-9]+)', line):
             disks.append(line.split()[0])
 
