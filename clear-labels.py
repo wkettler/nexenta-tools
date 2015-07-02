@@ -125,38 +125,25 @@ def execute(cmd, timeout=None):
     return output
 
 
-def format_disks(disks):
+def format_disk(disk):
     """
     Format a drives. The easiest way to do this is to create/destroy a zpool
     on all the drives.
 
     Inputs:
-        disks (list): A list of device IDs
+        disk (str): Device ID
     Outputs:
         None
     """
-    print "Formatting devices, please be patient..."
-    # Create the pool
+    print "Formatting devices %s, please be patient..." % disk
     try:
-        output = execute("zpool create -f clear %s" % " ".join(disks))
+        output = execute("fdisk -E /dev/rdsk/%sp0" % disk)
     except Retcode, r:
         sys.stderr.write(str(r))
         sys.stderr.write(r.output)
         sys.stderr.write("Please review /var/adm/messages for additional "
                          "information.\n")
         sys.exit(1)
-
-    # Destroy the pool
-    while True:
-        try:
-            output = execute("zpool destroy clear")
-        except Retcode:
-            # Zpool destroy may fail with device busy immediately after
-            # creating a pool. We will retry until it succeeds.
-            time.sleep(30)
-            continue
-        else:
-            break
 
 def get_disks():
     """
@@ -269,16 +256,13 @@ def main():
     zpool_disks = get_zpool_disks()
 
     # Iterate over all disks
-    wipe = []
     for d in disks:
         # If the disk is part of a pool continue
         if any(d in z for z in zpool_disks):
             continue
 
-        # Add the disk to the wipe list
-        wipe.append(d)
+        format_disk(d)
 
-    format_disks(wipe)
 
 if __name__ == "__main__":
     main()
