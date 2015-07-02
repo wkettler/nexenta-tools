@@ -18,6 +18,7 @@ import subprocess
 import getopt
 import sys
 import signal
+import time
 
 
 def usage():
@@ -145,13 +146,14 @@ def format_disks(disks):
                          "information.\n")
         sys.exit(1)
 
-    # Detroy the pool
+    # Destroy the pool
     while True:
         try:
             output = execute("zpool destroy clear")
         except Retcode:
             # Zpool destroy may fail with device busy immediately after
             # creating a pool. We will retry until it succeeds.
+            time.sleep(30)
             continue
         else:
             break
