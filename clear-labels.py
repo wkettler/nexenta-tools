@@ -138,7 +138,7 @@ def format_disks(disks):
     print "Formatting devices, please be patient..."
     # Create the pool
     try:
-        output = execute("zpool create clear %s" % " ".join(disks))
+        output = execute("zpool create -f clear %s" % " ".join(disks))
     except Retcode, r:
         sys.stderr.write(str(r))
         sys.stderr.write(r.output)
