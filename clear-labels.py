@@ -267,9 +267,7 @@ def main():
             sys.exit(1)
 
     disks = get_disks()
-    print disks
     zpool_disks = get_zpool_disks()
-    print zpool_disks
 
     # Iterate over all disks
     wipe = []
