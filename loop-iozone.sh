@@ -33,7 +33,7 @@ create
 while true; do
     echo "Starting iozone on ${pool}."
     date
-    (cd /volumes/${pool}/iozone && iozone -ec -r 32 -s 1048576m -l 6 -i 0 -i 1 -i 8)
+    (cd /volumes/${pool}/iozone && iozone -ec -r 32 -s 102400m -l 6 -i 0 -i 1 -i 8)
     echo "Waiting 30 seconds before next iteration."
     sleep 30
 done
