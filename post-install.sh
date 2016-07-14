@@ -11,6 +11,12 @@
 #
 
 #
+# Generate a rollback checkpoint
+#
+echo "Creata a rollback checkpoing..."
+nmc -c "setup appliance checkpoint create"
+
+#
 # Disable SMART
 #
 echo "Disabling SMART collector..."
