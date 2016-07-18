@@ -8,6 +8,7 @@
 # William Kettler <william.kettler@nexenta.com>
 #
 # 2016-06-30 - Initial commit
+# 2016-07-17 - Spelling fixes
 #
 
 #
