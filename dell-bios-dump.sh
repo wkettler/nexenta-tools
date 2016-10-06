@@ -2,7 +2,7 @@
 #
 # dell-bios.sh
 #
-# Configure Dell BIOS per best practices.
+# Dump the Dell BIOS configuration.
 #
 # Copyright (C) 2016  Nexenta Systems
 # William Kettler <william.kettler@nexenta.com>
