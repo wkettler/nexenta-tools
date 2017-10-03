@@ -14,7 +14,7 @@
 #
 # Generate a rollback checkpoint
 #
-echo "Creat a rollback checkpoint..."
+echo "Create a rollback checkpoint..."
 nmc -c "setup appliance checkpoint create"
 
 #

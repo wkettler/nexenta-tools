@@ -20,4 +20,9 @@ fmadm -q reset eft
 fmadm -q reset io-retire
 fmadm -q reset slow-io-de
 
+if [ -x /etc/devices/retire_store ]; then
+    echo "clearing Retire Store: this will probably need a reboot to bring devices back online"
+    rm /etc/devices/retire_store
+fi
+
 echo 'Complete!'
